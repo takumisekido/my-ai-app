@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sine Wave</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a1a; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <script>
+    new p5(function(p) {
+      const WAVES = [
+        { amp: 80,  freq: 0.018, speed: 1.8, color: [100, 180, 255], alpha: 200 },
+        { amp: 60,  freq: 0.022, speed: 2.4, color: [180, 100, 255], alpha: 160 },
+        { amp: 100, freq: 0.012, speed: 1.2, color: [80,  220, 200], alpha: 130 },
+        { amp: 50,  freq: 0.030, speed: 3.0, color: [255, 120, 160], alpha: 100 },
+      ];
+
+      let offsets;
+
+      p.setup = function() {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.RGB, 255);
+        offsets = WAVES.map(() => 0);
+      };
+
+      p.draw = function() {
+        p.background(10, 10, 26, 30);
+
+        WAVES.forEach((wave, idx) => {
+          offsets[idx] += wave.speed;
+
+          p.noFill();
+          p.strokeWeight(2.5);
+          p.stroke(wave.color[0], wave.color[1], wave.color[2], wave.alpha);
+
+          p.beginShape();
+          for (let y = 0; y <= p.height; y += 2) {
+            const x = p.width / 2 + wave.amp * Math.sin(y * wave.freq + offsets[idx] * 0.05);
+            p.curveVertex(x, y);
+          }
+          p.endShape();
+
+          // グロー効果
+          p.strokeWeight(6);
+          p.stroke(wave.color[0], wave.color[1], wave.color[2], 30);
+          p.beginShape();
+          for (let y = 0; y <= p.height; y += 4) {
+            const x = p.width / 2 + wave.amp * Math.sin(y * wave.freq + offsets[idx] * 0.05);
+            p.curveVertex(x, y);
+          }
+          p.endShape();
+        });
+      };
+
+      p.windowResized = function() {
+        p.resizeCanvas(p.windowWidth, p.windowHeight);
+      };
+    });
+  </script>
+</body>
+</html>
